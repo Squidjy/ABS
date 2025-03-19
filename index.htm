@@ -25,7 +25,7 @@
             if (leftJoyCon && leftJoyCon.vibrationActuator) {
                 leftJoyCon.vibrationActuator.playEffect("dual-rumble", {
                     startDelay: 0,
-                    duration: 500,
+                    duration: 1000,
                     strongMagnitude: 1.0,
                     weakMagnitude: 1.0
                 });
@@ -36,13 +36,13 @@
                 if (rightJoyCon && rightJoyCon.vibrationActuator) {
                     rightJoyCon.vibrationActuator.playEffect("dual-rumble", {
                         startDelay: 0,
-                        duration: 500,
+                        duration: 1000,
                         strongMagnitude: 1.0,
                         weakMagnitude: 1.0
                     });
                     console.log(`Rumble started on Right Joy-Con`);
                 }
-            }, 600); // Delayed pulse to right Joy-Con after left Joy-Con finishes
+            }, 1100); // Delayed pulse to right Joy-Con after left Joy-Con finishes
         }
 
         function stopRumble() {
