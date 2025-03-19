@@ -27,32 +27,18 @@
 
         function startRumble() {
             const gamepads = navigator.getGamepads();
-            const leftJoyCon = gamepads.find(gamepad => gamepad && gamepad.id.includes("(L)"));
-            const rightJoyCon = gamepads.find(gamepad => gamepad && gamepad.id.includes("(R)"));
-
-            if (leftJoyCon && leftJoyCon.vibrationActuator) {
-                indicateRumble(leftJoyCon.index, true);
-                leftJoyCon.vibrationActuator.playEffect("dual-rumble", {
-                    startDelay: 0,
-                    duration: 1000,
-                    strongMagnitude: 1.0,
-                    weakMagnitude: 1.0
-                }).then(() => indicateRumble(leftJoyCon.index, false));
-                console.log(`Rumble started on Left Joy-Con`);
-            }
-
-            setTimeout(() => {
-                if (rightJoyCon && rightJoyCon.vibrationActuator) {
-                    indicateRumble(rightJoyCon.index, true);
-                    rightJoyCon.vibrationActuator.playEffect("dual-rumble", {
+            for (const gamepad of gamepads) {
+                if (gamepad && gamepad.vibrationActuator) {
+                    indicateRumble(gamepad.index, true);
+                    gamepad.vibrationActuator.playEffect("dual-rumble", {
                         startDelay: 0,
                         duration: 1000,
                         strongMagnitude: 1.0,
                         weakMagnitude: 1.0
-                    }).then(() => indicateRumble(rightJoyCon.index, false));
-                    console.log(`Rumble started on Right Joy-Con`);
+                    }).then(() => indicateRumble(gamepad.index, false));
+                    console.log(`Rumble started on ${gamepad.id}`);
                 }
-            }, 1100); // Delayed pulse to right Joy-Con after left Joy-Con finishes
+            }
         }
 
         function stopRumble() {
