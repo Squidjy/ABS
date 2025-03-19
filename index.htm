@@ -1,109 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Joy-Con Rumble Test</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 50px;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 20px;
-    }
-    .message {
-      margin-top: 20px;
-      font-size: 18px;
-    }
-    #testRumbleBtn:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-  </style>
+    <title>Joy-Con Rumble Controller</title>
+    <script>
+        let device;
+        let server;
+        let characteristic;
+
+        async function connectJoyCon() {
+            try {
+                device = await navigator.bluetooth.requestDevice({
+                    acceptAllDevices: true,
+                    optionalServices: ['battery_service', 'device_information']
+                });
+                server = await device.gatt.connect();
+                const service = await server.getPrimaryService('battery_service');
+                characteristic = await service.getCharacteristic('battery_level');
+
+                alert('Joy-Con connected! Ready for rumble.');
+            } catch (error) {
+                console.error('Error connecting to Joy-Con:', error);
+            }
+        }
+
+        async function sendRumblePattern(pattern) {
+            if (!characteristic) {
+                alert("Please connect your Joy-Con first.");
+                return;
+            }
+
+            const rumbleData = new Uint8Array(pattern);
+            try {
+                await characteristic.writeValue(rumbleData);
+                console.log('Rumble pattern sent!');
+            } catch (error) {
+                console.error('Error sending rumble pattern:', error);
+            }
+        }
+
+        function startRumble() {
+            sendRumblePattern([0x10, 0x01, 0x40, 0x40, 0x00, 0x01, 0x40, 0x40]);
+        }
+
+        function stopRumble() {
+            sendRumblePattern([0x10, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00]);
+        }
+    </script>
 </head>
 <body>
-  <h1>Joy-Con Rumble Test test test test</h1>
-  <p>Press the button below to test the rumble effect on all connected Joy-Cons.</p>
-
-  <!-- Message area for connection status -->
-  <div id="connectionStatus" class="message"></div>
-
-  <!-- Test rumble button, initially disabled -->
-  <button id="testRumbleBtn" disabled>Test Rumble</button>
-
-  <script>
-    // Check for WebHID support
-    if (!navigator.hid) {
-      alert('WebHID is not supported on this browser.');
-    }
-
-    let joyCons = [];
-
-    // Function to start the rumble on a specific Joy-Con
-    async function triggerRumble(device) {
-      try {
-        const outputReport = new Uint8Array(65); // Joy-Con rumble data
-        outputReport[0] = 0x01; // Command to start rumble (check specific command for your Joy-Con)
-        outputReport[1] = 0x10; // Rumble intensity (can vary)
-        outputReport[2] = 0x0F; // Duration or pattern (can vary)
-
-        // Send rumble effect to the device
-        await device.sendReport(0x01, outputReport);
-        console.log(`Rumble triggered on device: ${device.productName}`);
-      } catch (error) {
-        console.error('Error triggering rumble:', error);
-      }
-    }
-
-    // Function to connect to the Joy-Cons
-    async function connectJoyCons() {
-      try {
-        const devices = await navigator.hid.requestDevice({
-          filters: [] // Remove filter to detect all HID devices
-        });
-
-        if (devices.length > 0) {
-          console.log("Connected devices:", devices);
-          joyCons = devices.filter(device => device.vendorId === 0x057E); // Filter for Nintendo devices
-          if (joyCons.length > 0) {
-            document.getElementById('connectionStatus').innerText = `Connected to ${joyCons.length} Joy-Con(s). You can now test the rumble effect.`;
-            document.getElementById('testRumbleBtn').disabled = false; // Enable the rumble test button
-          } else {
-            document.getElementById('connectionStatus').innerText = 'No Joy-Con devices found. Please connect them first.';
-            document.getElementById('testRumbleBtn').disabled = true;
-          }
-        } else {
-          document.getElementById('connectionStatus').innerText = 'No devices detected. Please connect your Joy-Cons.';
-          document.getElementById('testRumbleBtn').disabled = true;
-        }
-      } catch (error) {
-        console.error('Error connecting to Joy-Cons:', error);
-        document.getElementById('connectionStatus').innerText = 'Error connecting to Joy-Cons. Please try again.';
-        document.getElementById('testRumbleBtn').disabled = true;
-      }
-    }
-
-    // Trigger rumble on all connected Joy-Cons when button is clicked
-    document.getElementById('testRumbleBtn').addEventListener('click', () => {
-      if (joyCons.length === 0) {
-        alert('No Joy-Cons connected. Please connect them first.');
-        return;
-      }
-
-      joyCons.forEach(async (joyCon) => {
-        await triggerRumble(joyCon);
-      });
-    });
-
-    // Initialize and connect to Joy-Cons on page load
-    window.addEventListener('load', () => {
-      connectJoyCons();
-    });
-  </script>
+    <h1>Joy-Con Rumble Controller</h1>
+    <button onclick="connectJoyCon()">Connect Joy-Con</button>
+    <button onclick="startRumble()">Start Rumble</button>
+    <button onclick="stopRumble()">Stop Rumble</button>
 </body>
 </html>
