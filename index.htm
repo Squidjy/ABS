@@ -3,47 +3,34 @@
 <head>
     <title>Joy-Con Rumble Controller</title>
     <script>
-        let device;
-        let characteristic;
-
-        async function connectJoyCon() {
-            try {
-                device = await navigator.bluetooth.requestDevice({
-                    filters: [{ namePrefix: 'Joy-Con' }],
-                    optionalServices: [0x1802, '00010001-0000-1000-8000-00805f9b34fb']
-                });
-
-                const server = await device.gatt.connect();
-                const service = await server.getPrimaryService('00010001-0000-1000-8000-00805f9b34fb');
-                characteristic = await service.getCharacteristic('00010002-0000-1000-8000-00805f9b34fb');
-
-                alert('Joy-Con connected! Ready for rumble.');
-            } catch (error) {
-                console.error('Error connecting to Joy-Con:', error);
-            }
-        }
-
-        async function sendRumblePattern(pattern) {
-            if (!characteristic) {
-                alert("Please connect your Joy-Con first.");
-                return;
-            }
-
-            const rumbleData = new Uint8Array(pattern);
-            try {
-                await characteristic.writeValue(rumbleData);
-                console.log('Rumble pattern sent!');
-            } catch (error) {
-                console.error('Error sending rumble pattern:', error);
-            }
-        }
-
         function startRumble() {
-            sendRumblePattern([0x10, 0x01, 0x00, 0x01, 0x40, 0x40, 0x40, 0x40, 0x00]);
+            const gamepads = navigator.getGamepads();
+            for (const gamepad of gamepads) {
+                if (gamepad && gamepad.vibrationActuator) {
+                    gamepad.vibrationActuator.playEffect("dual-rumble", {
+                        startDelay: 0,
+                        duration: 1000,
+                        strongMagnitude: 1.0,
+                        weakMagnitude: 1.0
+                    });
+                    console.log(`Rumble started on ${gamepad.id}`);
+                }
+            }
         }
 
         function stopRumble() {
-            sendRumblePattern([0x10, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00]);
+            const gamepads = navigator.getGamepads();
+            for (const gamepad of gamepads) {
+                if (gamepad && gamepad.vibrationActuator) {
+                    gamepad.vibrationActuator.playEffect("dual-rumble", {
+                        startDelay: 0,
+                        duration: 0,
+                        strongMagnitude: 0,
+                        weakMagnitude: 0
+                    });
+                    console.log(`Rumble stopped on ${gamepad.id}`);
+                }
+            }
         }
 
         window.addEventListener("gamepadconnected", (event) => {
@@ -71,7 +58,6 @@
 </head>
 <body>
     <h1>Joy-Con Rumble Controller</h1>
-    <button onclick="connectJoyCon()">Connect Joy-Con</button>
     <button onclick="startRumble()">Start Rumble</button>
     <button onclick="stopRumble()">Stop Rumble</button>
 </body>
