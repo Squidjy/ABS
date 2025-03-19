@@ -16,12 +16,25 @@
       cursor: pointer;
       margin-top: 20px;
     }
+    .message {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+    #testRumbleBtn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
   <h1>Joy-Con Rumble Test</h1>
   <p>Press the button below to test the rumble effect on all connected Joy-Cons.</p>
-  <button id="testRumbleBtn">Test Rumble</button>
+
+  <!-- Message area for connection status -->
+  <div id="connectionStatus" class="message"></div>
+
+  <!-- Test rumble button, initially disabled -->
+  <button id="testRumbleBtn" disabled>Test Rumble</button>
 
   <script>
     // Check for WebHID support
@@ -57,12 +70,21 @@
         if (devices.length > 0) {
           console.log("Connected devices:", devices);
           joyCons = devices.filter(device => device.vendorId === 0x057E); // Filter for Nintendo devices
-          console.log(`Connected to ${joyCons.length} Joy-Cons`);
+          if (joyCons.length > 0) {
+            document.getElementById('connectionStatus').innerText = `Connected to ${joyCons.length} Joy-Con(s). You can now test the rumble effect.`;
+            document.getElementById('testRumbleBtn').disabled = false; // Enable the rumble test button
+          } else {
+            document.getElementById('connectionStatus').innerText = 'No Joy-Con devices found. Please connect them first.';
+            document.getElementById('testRumbleBtn').disabled = true;
+          }
         } else {
-          console.log("No devices detected.");
+          document.getElementById('connectionStatus').innerText = 'No devices detected. Please connect your Joy-Cons.';
+          document.getElementById('testRumbleBtn').disabled = true;
         }
       } catch (error) {
         console.error('Error connecting to Joy-Cons:', error);
+        document.getElementById('connectionStatus').innerText = 'Error connecting to Joy-Cons. Please try again.';
+        document.getElementById('testRumbleBtn').disabled = true;
       }
     }
 
