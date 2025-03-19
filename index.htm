@@ -26,6 +26,7 @@
         }
 
         function startRumble() {
+            navigator.getGamepads(); // Force poll for mobile browsers
             const gamepads = navigator.getGamepads();
             for (const gamepad of gamepads) {
                 if (gamepad && gamepad.vibrationActuator) {
@@ -57,6 +58,12 @@
             }
         }
 
+        function reconnectControllers() {
+            navigator.getGamepads(); // Force manual check for gamepads
+            alert("Attempting to reconnect controllers. Please ensure they are paired.");
+            updateControllerList();
+        }
+
         window.addEventListener("gamepadconnected", (event) => {
             console.log("Gamepad connected: ", event.gamepad);
             alert(`Gamepad connected: ${event.gamepad.id}`);
@@ -81,6 +88,7 @@
     <h1>Joy-Con Rumble Controller</h1>
     <button onclick="startRumble()">Start Rumble</button>
     <button onclick="stopRumble()">Stop Rumble</button>
+    <button onclick="reconnectControllers()">Reconnect Controllers</button>
     <h2>Connected Controllers:</h2>
     <ul id="controller-list"></ul>
 </body>
