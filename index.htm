@@ -3,6 +3,20 @@
 <head>
     <title>Joy-Con Rumble Controller</title>
     <script>
+        function updateControllerList() {
+            const gamepads = navigator.getGamepads();
+            const controllerList = document.getElementById("controller-list");
+            controllerList.innerHTML = ""; // Clear existing list
+
+            for (const gamepad of gamepads) {
+                if (gamepad) {
+                    const listItem = document.createElement("li");
+                    listItem.textContent = `${gamepad.id} (Index: ${gamepad.index})`;
+                    controllerList.appendChild(listItem);
+                }
+            }
+        }
+
         function startRumble() {
             const gamepads = navigator.getGamepads();
             const leftJoyCon = gamepads.find(gamepad => gamepad && gamepad.id.includes("(L)"));
@@ -49,20 +63,17 @@
         window.addEventListener("gamepadconnected", (event) => {
             console.log("Gamepad connected: ", event.gamepad);
             alert(`Gamepad connected: ${event.gamepad.id}`);
+            updateControllerList();
         });
 
         window.addEventListener("gamepaddisconnected", (event) => {
             console.log("Gamepad disconnected: ", event.gamepad);
             alert(`Gamepad disconnected: ${event.gamepad.id}`);
+            updateControllerList();
         });
 
         function pollGamepadInput() {
-            const gamepads = navigator.getGamepads();
-            for (const gamepad of gamepads) {
-                if (gamepad) {
-                    console.log(`Gamepad ${gamepad.index}: ${gamepad.id}`);
-                }
-            }
+            updateControllerList();
             requestAnimationFrame(pollGamepadInput);
         }
 
@@ -73,6 +84,7 @@
     <h1>Joy-Con Rumble Controller</h1>
     <button onclick="startRumble()">Start Rumble</button>
     <button onclick="stopRumble()">Stop Rumble</button>
+    <h2>Connected Controllers:</h2>
+    <ul id="controller-list"></ul>
 </body>
 </html>
-
