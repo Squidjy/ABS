@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editable Webpage</title>
+</head>
+<body>
+    <h1 contenteditable="true">Welcome to My Editable Webpage!</h1>
+    <p contenteditable="true">You can edit this text directly on the page.</p>
+
+    <button onclick="saveContent()">Save Content</button>
+
+    <script>
+        function saveContent() {
+            var content = document.body.innerHTML;
+            localStorage.setItem('savedContent', content);
+            alert("Content saved!");
+        }
+
+        // Load saved content if available
+        window.onload = function() {
+            var savedContent = localStorage.getItem('savedContent');
+            if (savedContent) {
+                document.body.innerHTML = savedContent;
+            }
+        };
+    </script>
+</body>
+</html>
