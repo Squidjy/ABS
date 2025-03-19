@@ -67,4 +67,21 @@
     }
 
     // Trigger rumble on all connected Joy-Cons when button is clicked
-    document.getElementById('testRumbl
+    document.getElementById('testRumbleBtn').addEventListener('click', () => {
+      if (joyCons.length === 0) {
+        alert('No Joy-Cons connected. Please connect them first.');
+        return;
+      }
+
+      joyCons.forEach(async (joyCon) => {
+        await triggerRumble(joyCon);
+      });
+    });
+
+    // Initialize and connect to Joy-Cons on page load
+    window.addEventListener('load', () => {
+      connectJoyCons();
+    });
+  </script>
+</body>
+</html>
