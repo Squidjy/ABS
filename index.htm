@@ -45,6 +45,28 @@
         function stopRumble() {
             sendRumblePattern([0x10, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00]);
         }
+
+        window.addEventListener("gamepadconnected", (event) => {
+            console.log("Gamepad connected: ", event.gamepad);
+            alert(`Gamepad connected: ${event.gamepad.id}`);
+        });
+
+        window.addEventListener("gamepaddisconnected", (event) => {
+            console.log("Gamepad disconnected: ", event.gamepad);
+            alert(`Gamepad disconnected: ${event.gamepad.id}`);
+        });
+
+        function pollGamepadInput() {
+            const gamepads = navigator.getGamepads();
+            for (const gamepad of gamepads) {
+                if (gamepad) {
+                    console.log(`Gamepad ${gamepad.index}: ${gamepad.id}`);
+                }
+            }
+            requestAnimationFrame(pollGamepadInput);
+        }
+
+        window.addEventListener("gamepadconnected", pollGamepadInput);
     </script>
 </head>
 <body>
