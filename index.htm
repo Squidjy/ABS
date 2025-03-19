@@ -51,32 +51,20 @@
     async function connectJoyCons() {
       try {
         const devices = await navigator.hid.requestDevice({
-          filters: [{ vendorId: 0x057E }] // Vendor ID for Nintendo controllers
+          filters: [] // Remove filter to detect all HID devices
         });
 
-        joyCons = devices;
-        console.log(`Connected to ${joyCons.length} Joy-Cons`);
+        if (devices.length > 0) {
+          console.log("Connected devices:", devices);
+          joyCons = devices.filter(device => device.vendorId === 0x057E); // Filter for Nintendo devices
+          console.log(`Connected to ${joyCons.length} Joy-Cons`);
+        } else {
+          console.log("No devices detected.");
+        }
       } catch (error) {
         console.error('Error connecting to Joy-Cons:', error);
       }
     }
 
     // Trigger rumble on all connected Joy-Cons when button is clicked
-    document.getElementById('testRumbleBtn').addEventListener('click', () => {
-      if (joyCons.length === 0) {
-        alert('No Joy-Cons connected. Please connect them first.');
-        return;
-      }
-
-      joyCons.forEach(async (joyCon) => {
-        await triggerRumble(joyCon);
-      });
-    });
-
-    // Initialize and connect to Joy-Cons on page load
-    window.addEventListener('load', () => {
-      connectJoyCons();
-    });
-  </script>
-</body>
-</html>
+    document.getElementById('testRumbl
