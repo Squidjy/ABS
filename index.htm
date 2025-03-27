@@ -25,24 +25,30 @@
             }
         }
 
-        function startRumble() {
+        async function startRumble() {
             navigator.getGamepads(); // Force poll for mobile browsers
             const gamepads = navigator.getGamepads();
             for (const gamepad of gamepads) {
-                if (gamepad) {
-                    console.log(`Gamepad: ${gamepad.id}, VibrationActuator: ${!!gamepad.vibrationActuator}`);
-                    if (gamepad.vibrationActuator) {
-                        indicateRumble(gamepad.index, true);
-                        gamepad.vibrationActuator.playEffect("dual-rumble", {
-                            startDelay: 500,
-                            duration: 1000,
-                            strongMagnitude: 1.0,
-                            weakMagnitude: 1.0
-                        }).then(() => indicateRumble(gamepad.index, false));
-                        console.log(`Rumble started on ${gamepad.id}`);
-                    } else {
-                        console.warn(`No vibration support for ${gamepad.id}`);
-                    }
+                if (gamepad && gamepad.vibrationActuator) {
+                    indicateRumble(gamepad.index, true);
+                    console.log(`Starting alternating rumble on ${gamepad.id}`);
+
+                    // Alternate between strongMagnitude and weakMagnitude
+                    await gamepad.vibrationActuator.playEffect("dual-rumble", {
+                        startDelay: 0,
+                        duration: 1000,
+                        strongMagnitude: 1.0,
+                        weakMagnitude: 0.0
+                    });
+                    await gamepad.vibrationActuator.playEffect("dual-rumble", {
+                        startDelay: 0,
+                        duration: 1000,
+                        strongMagnitude: 0.0,
+                        weakMagnitude: 1.0
+                    });
+
+                    indicateRumble(gamepad.index, false);
+                    console.log(`Alternating rumble finished on ${gamepad.id}`);
                 }
             }
         }
@@ -87,11 +93,6 @@
         }
 
         window.addEventListener("gamepadconnected", pollGamepadInput);
-
-        document.body.addEventListener("click", () => {
-            console.log("User interaction detected - Enabling rumble.");
-            startRumble();
-        });
     </script>
 </head>
 <body>
