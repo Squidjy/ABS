@@ -3,6 +3,8 @@
 <head>
     <title>Joy-Con Rumble Controller</title>
     <script>
+        let isRumbling = false;
+
         function updateControllerList() {
             const gamepads = navigator.getGamepads();
             const controllerList = document.getElementById("controller-list");
@@ -26,26 +28,27 @@
         }
 
         async function startRumble() {
-            navigator.getGamepads(); // Force poll for mobile browsers
             const gamepads = navigator.getGamepads();
             for (const gamepad of gamepads) {
                 if (gamepad && gamepad.vibrationActuator) {
                     indicateRumble(gamepad.index, true);
                     console.log(`Starting alternating rumble on ${gamepad.id}`);
+                    isRumbling = true;
 
-                    // Alternate between strongMagnitude and weakMagnitude
-                    await gamepad.vibrationActuator.playEffect("dual-rumble", {
-                        startDelay: 0,
-                        duration: 1000,
-                        strongMagnitude: 1.0,
-                        weakMagnitude: 0.0
-                    });
-                    await gamepad.vibrationActuator.playEffect("dual-rumble", {
-                        startDelay: 0,
-                        duration: 1000,
-                        strongMagnitude: 0.0,
-                        weakMagnitude: 1.0
-                    });
+                    while (isRumbling) {
+                        await gamepad.vibrationActuator.playEffect("dual-rumble", {
+                            startDelay: 0,
+                            duration: 1000,
+                            strongMagnitude: 1.0,
+                            weakMagnitude: 0.0
+                        });
+                        await gamepad.vibrationActuator.playEffect("dual-rumble", {
+                            startDelay: 0,
+                            duration: 1000,
+                            strongMagnitude: 0.0,
+                            weakMagnitude: 1.0
+                        });
+                    }
 
                     indicateRumble(gamepad.index, false);
                     console.log(`Alternating rumble finished on ${gamepad.id}`);
@@ -54,6 +57,7 @@
         }
 
         function stopRumble() {
+            isRumbling = false;
             const gamepads = navigator.getGamepads();
             for (const gamepad of gamepads) {
                 if (gamepad && gamepad.vibrationActuator) {
@@ -88,7 +92,20 @@
         });
 
         function pollGamepadInput() {
-            updateControllerList();
+            const gamepads = navigator.getGamepads();
+            for (const gamepad of gamepads) {
+                if (gamepad) {
+                    for (let i = 0; i < gamepad.buttons.length; i++) {
+                        if (gamepad.buttons[i].pressed) {
+                            if (!isRumbling) {
+                                startRumble();
+                            } else {
+                                stopRumble();
+                            }
+                        }
+                    }
+                }
+            }
             requestAnimationFrame(pollGamepadInput);
         }
 
