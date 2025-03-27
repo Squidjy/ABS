@@ -95,14 +95,10 @@
             const gamepads = navigator.getGamepads();
             for (const gamepad of gamepads) {
                 if (gamepad) {
-                    for (let i = 0; i < gamepad.buttons.length; i++) {
-                        if (gamepad.buttons[i].pressed) {
-                            if (!isRumbling) {
-                                startRumble();
-                            } else {
-                                stopRumble();
-                            }
-                        }
+                    if (gamepad.buttons[7]?.pressed && !isRumbling) { // Right Trigger
+                        startRumble();
+                    } else if (gamepad.buttons[6]?.pressed && isRumbling) { // Left Trigger
+                        stopRumble();
                     }
                 }
             }
