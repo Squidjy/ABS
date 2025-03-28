@@ -26,40 +26,36 @@
                 return;
             }
 
-            for (let i = 0; i < 4; i++) { // Repeat pattern 4 times
-                await controller.vibrationActuator.playEffect("dual-rumble", {
-                    startDelay: 0,
-                    duration: 50,
-                    strongMagnitude: 0.8,
-                    weakMagnitude: 0.0
-                });
-                await new Promise(resolve => setTimeout(resolve, 100));
+            await controller.vibrationActuator.playEffect("dual-rumble", {
+                startDelay: 10,
+                duration: 50,
+                strongMagnitude: 0.8,
+                weakMagnitude: 0.0
+            });
+            await new Promise(resolve => setTimeout(resolve, 100));
 
-                await controller.vibrationActuator.playEffect("dual-rumble", {
-                    startDelay: 0,
-                    duration: 50,
-                    strongMagnitude: 0.8,
-                    weakMagnitude: 0.0
-                });
-                await new Promise(resolve => setTimeout(resolve, 100));
-             
-                await controller.vibrationActuator.playEffect("dual-rumble", {
-                    startDelay: 0,
-                    duration: 50,
-                    strongMagnitude: 0.0,
-                    weakMagnitude: 0.8
-                });
-                await new Promise(resolve => setTimeout(resolve, 100));
-            }
-                await controller.vibrationActuator.playEffect("dual-rumble", {
-                    startDelay: 0,
-                    duration: 50,
-                    strongMagnitude: 0.0,
-                    weakMagnitude: 0.8
-                });
-                await new Promise(resolve => setTimeout(resolve, 100));
-            }
+            await controller.vibrationActuator.playEffect("dual-rumble", {
+                startDelay: 10,
+                duration: 50,
+                strongMagnitude: 0.8,
+                weakMagnitude: 0.0
+            });
+            await new Promise(resolve => setTimeout(resolve, 100));
 
+            await controller.vibrationActuator.playEffect("dual-rumble", {
+                startDelay: 10,
+                duration: 50,
+                strongMagnitude: 0.0,
+                weakMagnitude: 0.8
+            });
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            await controller.vibrationActuator.playEffect("dual-rumble", {
+                startDelay: 10,
+                duration: 50,
+                strongMagnitude: 0.0,
+                weakMagnitude: 0.8
+            });
         }
 
         function pollGamepadInput() {
