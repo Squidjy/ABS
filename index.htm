@@ -3,6 +3,20 @@
 <head>
     <title>EMDR Tapper</title>
     <script>
+        function updateControllerList() {
+            const gamepads = navigator.getGamepads();
+            const controllerList = document.getElementById("controller-list");
+            controllerList.innerHTML = ""; // Clear existing list
+
+            for (const gamepad of gamepads) {
+                if (gamepad) {
+                    const listItem = document.createElement("li");
+                    listItem.textContent = `${gamepad.id} (Index: ${gamepad.index})`;
+                    controllerList.appendChild(listItem);
+                }
+            }
+        }
+
         async function runTapperPattern() {
             const gamepads = navigator.getGamepads();
             const joycons = Array.from(gamepads).filter(gp => gp && gp.vibrationActuator);
@@ -35,6 +49,8 @@
             const gamepads = navigator.getGamepads();
             const joycons = Array.from(gamepads).filter(gp => gp && gp.vibrationActuator);
 
+            updateControllerList();
+
             if (joycons.length < 2) {
                 console.log("Waiting for two Joy-Cons to be paired.");
                 return;
@@ -49,10 +65,14 @@
         }
 
         window.addEventListener("gamepadconnected", pollGamepadInput);
+        window.addEventListener("gamepadconnected", updateControllerList);
+        window.addEventListener("gamepaddisconnected", updateControllerList);
     </script>
 </head>
 <body>
     <h1>EMDR Tapper</h1>
     <button onclick="runTapperPattern()">Start Tapper Pattern</button>
+    <h2>Connected Controllers:</h2>
+    <ul id="controller-list"></ul>
 </body>
 </html>
