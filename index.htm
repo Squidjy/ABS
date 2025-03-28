@@ -19,7 +19,7 @@
                     strongMagnitude: 0.8,
                     weakMagnitude: 0.0
                 });
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await new Promise(resolve => setTimeout(resolve, 100));
 
                 await joycons[1].vibrationActuator.playEffect("dual-rumble", {
                     startDelay: 0,
@@ -27,12 +27,19 @@
                     strongMagnitude: 0.8,
                     weakMagnitude: 0.0
                 });
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await new Promise(resolve => setTimeout(resolve, 100));
             }
         }
 
         function pollGamepadInput() {
             const gamepads = navigator.getGamepads();
+            const joycons = Array.from(gamepads).filter(gp => gp && gp.vibrationActuator);
+
+            if (joycons.length < 2) {
+                console.log("Waiting for two Joy-Cons to be paired.");
+                return;
+            }
+
             for (const gamepad of gamepads) {
                 if (gamepad && gamepad.buttons[7]?.pressed) { // Right Trigger
                     runTapperPattern();
