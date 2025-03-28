@@ -19,16 +19,15 @@
 
         async function runTapperPattern() {
             const gamepads = navigator.getGamepads();
-            const leftJoyCon = Array.from(gamepads).find(gp => gp && gp.id.includes("Joy-Con (L)"));
-            const rightJoyCon = Array.from(gamepads).find(gp => gp && gp.id.includes("Joy-Con (R)"));
+            const controller = Array.from(gamepads).find(gp => gp && gp.vibrationActuator);
 
-            if (!leftJoyCon || !rightJoyCon) {
-                alert("Both a left and right Joy-Con are required for the tapper pattern.");
+            if (!controller) {
+                alert("A Joy-Con or supported controller is required for the tapper pattern.");
                 return;
             }
 
             for (let i = 0; i < 4; i++) { // Repeat pattern 4 times
-                await leftJoyCon.vibrationActuator.playEffect("dual-rumble", {
+                await controller.vibrationActuator.playEffect("dual-rumble", {
                     startDelay: 0,
                     duration: 50,
                     strongMagnitude: 0.8,
@@ -36,11 +35,11 @@
                 });
                 await new Promise(resolve => setTimeout(resolve, 100));
 
-                await rightJoyCon.vibrationActuator.playEffect("dual-rumble", {
+                await controller.vibrationActuator.playEffect("dual-rumble", {
                     startDelay: 0,
                     duration: 50,
-                    strongMagnitude: 0.8,
-                    weakMagnitude: 0.0
+                    strongMagnitude: 0.0,
+                    weakMagnitude: 0.8
                 });
                 await new Promise(resolve => setTimeout(resolve, 100));
             }
@@ -48,20 +47,19 @@
 
         function pollGamepadInput() {
             const gamepads = navigator.getGamepads();
-            const rightJoyCon = Array.from(gamepads).find(gp => gp && gp.id.includes("Joy-Con (R)"));
+            const controller = Array.from(gamepads).find(gp => gp && gp.vibrationActuator);
 
             updateControllerList();
 
-            if (!rightJoyCon) {
-                console.log("Waiting for Joy-Con (R) to be paired.");
+            if (!controller) {
+                console.log("Waiting for a Joy-Con or controller to be paired.");
                 return;
             }
 
-            for (const gamepad of gamepads) {
-                if (gamepad && gamepad.buttons[7]?.pressed) { // Right Trigger
-                    runTapperPattern();
-                }
+            if (controller.buttons[7]?.pressed) { // Right Trigger
+                runTapperPattern();
             }
+
             requestAnimationFrame(pollGamepadInput);
         }
 
