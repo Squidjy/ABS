@@ -1,105 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Joy-Con Rumble Controller</title>
+    <title>EMDR Tapper</title>
     <script>
-        let isRumbling = false;
-
-        function updateControllerList() {
+        async function runTapperPattern() {
             const gamepads = navigator.getGamepads();
-            const controllerList = document.getElementById("controller-list");
-            controllerList.innerHTML = ""; // Clear existing list
+            const joycons = Array.from(gamepads).filter(gp => gp && gp.vibrationActuator);
 
-            for (const gamepad of gamepads) {
-                if (gamepad) {
-                    const listItem = document.createElement("li");
-                    listItem.id = `controller-${gamepad.index}`;
-                    listItem.textContent = `${gamepad.id} (Index: ${gamepad.index})`;
-                    controllerList.appendChild(listItem);
-                }
+            if (joycons.length < 2) {
+                alert("Two Joy-Cons are required for the tapper pattern.");
+                return;
+            }
+
+            for (let i = 0; i < 4; i++) { // Repeat pattern 4 times
+                await joycons[0].vibrationActuator.playEffect("dual-rumble", {
+                    startDelay: 0,
+                    duration: 500,
+                    strongMagnitude: 1.0,
+                    weakMagnitude: 0.0
+                });
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                await joycons[1].vibrationActuator.playEffect("dual-rumble", {
+                    startDelay: 0,
+                    duration: 500,
+                    strongMagnitude: 1.0,
+                    weakMagnitude: 0.0
+                });
+                await new Promise(resolve => setTimeout(resolve, 500));
             }
         }
-
-        function indicateRumble(controllerId, state) {
-            const controllerItem = document.getElementById(`controller-${controllerId}`);
-            if (controllerItem) {
-                controllerItem.style.color = state ? "green" : "black";
-            }
-        }
-
-        async function startRumble() {
-            const gamepads = navigator.getGamepads();
-            for (const gamepad of gamepads) {
-                if (gamepad && gamepad.vibrationActuator) {
-                    indicateRumble(gamepad.index, true);
-                    console.log(`Starting alternating rumble on ${gamepad.id}`);
-                    isRumbling = true;
-
-                    while (isRumbling) {
-                        await gamepad.vibrationActuator.playEffect("dual-rumble", {
-                            startDelay: 0,
-                            duration: 1000,
-                            strongMagnitude: 1.0,
-                            weakMagnitude: 0.0
-                        });
-                        await gamepad.vibrationActuator.playEffect("dual-rumble", {
-                            startDelay: 0,
-                            duration: 1000,
-                            strongMagnitude: 0.0,
-                            weakMagnitude: 1.0
-                        });
-                    }
-
-                    indicateRumble(gamepad.index, false);
-                    console.log(`Alternating rumble finished on ${gamepad.id}`);
-                }
-            }
-        }
-
-        function stopRumble() {
-            isRumbling = false;
-            const gamepads = navigator.getGamepads();
-            for (const gamepad of gamepads) {
-                if (gamepad && gamepad.vibrationActuator) {
-                    indicateRumble(gamepad.index, false);
-                    gamepad.vibrationActuator.playEffect("dual-rumble", {
-                        startDelay: 0,
-                        duration: 0,
-                        strongMagnitude: 0,
-                        weakMagnitude: 0
-                    });
-                    console.log(`Rumble stopped on ${gamepad.id}`);
-                }
-            }
-        }
-
-        function reconnectControllers() {
-            navigator.getGamepads(); // Force manual check for gamepads
-            alert("Attempting to reconnect controllers. Please ensure they are paired.");
-            updateControllerList();
-        }
-
-        window.addEventListener("gamepadconnected", (event) => {
-            console.log("Gamepad connected: ", event.gamepad);
-            alert(`Gamepad connected: ${event.gamepad.id}`);
-            updateControllerList();
-        });
-
-        window.addEventListener("gamepaddisconnected", (event) => {
-            console.log("Gamepad disconnected: ", event.gamepad);
-            alert(`Gamepad disconnected: ${event.gamepad.id}`);
-            updateControllerList();
-        });
 
         function pollGamepadInput() {
             const gamepads = navigator.getGamepads();
             for (const gamepad of gamepads) {
-                if (gamepad) {
-                    if (gamepad.buttons[7]?.pressed && !isRumbling) { // Right Trigger
-                        startRumble();
-                    } else if (gamepad.buttons[6]?.pressed && isRumbling) { // Left Trigger
-                        stopRumble();
-                    }
+                if (gamepad && gamepad.buttons[7]?.pressed) { // Right Trigger
+                    runTapperPattern();
                 }
             }
             requestAnimationFrame(pollGamepadInput);
@@ -109,11 +45,7 @@
     </script>
 </head>
 <body>
-    <h1>Joy-Con Rumble Controller</h1>
-    <button onclick="startRumble()">Start Rumble</button>
-    <button onclick="stopRumble()">Stop Rumble</button>
-    <button onclick="reconnectControllers()">Reconnect Controllers</button>
-    <h2>Connected Controllers:</h2>
-    <ul id="controller-list"></ul>
+    <h1>EMDR Tapper</h1>
+    <button onclick="runTapperPattern()">Start Tapper Pattern</button>
 </body>
 </html>
