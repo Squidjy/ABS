@@ -43,12 +43,12 @@
             
             if (!isVibrating) return;
             await controller.vibrationActuator.playEffect("dual-rumble", {
-                startDelay: 500,
+                startDelay: 50,
                 duration: 50,
                 strongMagnitude: 0.7,
                 weakMagnitude: 0.0
             });
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => setTimeout(resolve, 200));
             
             if (!isVibrating) return;
             await controller.vibrationActuator.playEffect("dual-rumble", {
@@ -66,16 +66,7 @@
                 strongMagnitude: 0.0,
                 weakMagnitude: 0.9
             });
-            await new Promise(resolve => setTimeout(resolve, 50));
-            
-            if (!isVibrating) return;
-            await controller.vibrationActuator.playEffect("dual-rumble", {
-                startDelay: 50,
-                duration: 50,
-                strongMagnitude: 0.7,
-                weakMagnitude: 0.0
-            });
-            await new Promise(resolve => setTimeout(resolve, 50));
+            await new Promise(resolve => setTimeout(resolve, 200));
             
             if (!isVibrating) return;
             await controller.vibrationActuator.playEffect("dual-rumble", {
@@ -84,7 +75,16 @@
                 strongMagnitude: 0.7,
                 weakMagnitude: 0.0
             });
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => setTimeout(resolve, 50));
+            
+            if (!isVibrating) return;
+            await controller.vibrationActuator.playEffect("dual-rumble", {
+                startDelay: 50,
+                duration: 50,
+                strongMagnitude: 0.7,
+                weakMagnitude: 0.0
+            });
+            await new Promise(resolve => setTimeout(resolve, 200));
             
             if (!isVibrating) return;
             await controller.vibrationActuator.playEffect("dual-rumble", {
@@ -102,7 +102,7 @@
                 strongMagnitude: 0.0,
                 weakMagnitude: 0.9
             });
-            await new Promise(resolve => setTimeout(resolve, 50));
+            await new Promise(resolve => setTimeout(resolve, 200));
             
             isVibrating = false;
         }
