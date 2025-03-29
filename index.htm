@@ -3,6 +3,8 @@
 <head>
     <title>EMDR Tapper</title>
     <script>
+        let isVibrating = false; // Prevent overlapping patterns
+
         function updateControllerList() {
             const gamepads = navigator.getGamepads();
             const controllerList = document.getElementById("controller-list");
@@ -18,11 +20,15 @@
         }
 
         async function runTapperPattern() {
+            if (isVibrating) return; // Prevent overlapping patterns
+            isVibrating = true;
+
             const gamepads = navigator.getGamepads();
             const controller = Array.from(gamepads).find(gp => gp && gp.vibrationActuator);
 
             if (!controller) {
                 alert("A Joy-Con or supported controller is required for the tapper pattern.");
+                isVibrating = false;
                 return;
             }
 
@@ -56,6 +62,8 @@
                 strongMagnitude: 0.0,
                 weakMagnitude: 0.8
             });
+
+            isVibrating = false;
         }
 
         function pollGamepadInput() {
