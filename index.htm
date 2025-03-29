@@ -87,6 +87,12 @@
         window.addEventListener("gamepadconnected", pollGamepadInput);
         window.addEventListener("gamepadconnected", updateControllerList);
         window.addEventListener("gamepaddisconnected", updateControllerList);
+        
+        window.addEventListener("keydown", (event) => {
+            if (event.code === "Space") {
+                runTapperPattern();
+            }
+        });
     </script>
 </head>
 <body>
