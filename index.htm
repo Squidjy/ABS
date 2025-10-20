@@ -40,7 +40,7 @@
                 weakMagnitude: 0.0
             });
 
-            await new Promise(resolve => setTimeout(resolve, 200));
+            await new Promise(resolve => setTimeout(resolve, 100));
             
             if (!isVibrating) return;
             await controller.vibrationActuator.playEffect("dual-rumble", {
